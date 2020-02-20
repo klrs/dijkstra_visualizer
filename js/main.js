@@ -11,8 +11,9 @@
     });
     let resetButton = document.getElementById('reset');
     resetButton.addEventListener("click", function() {
-      alert("reset");
+      //alert("reset");
       grid.reset();
+      algorithm.hasRan = false;
     });
   };
 })();
