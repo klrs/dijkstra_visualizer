@@ -56,6 +56,7 @@ function Djikstra(grid) {
   this.grid = grid;
   this.weight = 1;
   this.graph = null;
+  this.hasRan = false;
 }
 
 Djikstra.prototype.initializeGraph = function() {
@@ -78,53 +79,60 @@ Djikstra.prototype.initializeGraph = function() {
 };
 
 Djikstra.prototype.findPath = async function () {
-  this.initializeGraph();
+  if(!this.hasRan) {
+    this.initializeGraph();
 
-  let startNode = this.grid.squares[this.grid.startPointIndex];
-  let endNode = this.grid.squares[this.grid.endPointIndex];
+    let startNode = this.grid.squares[this.grid.startPointIndex];
+    let endNode = this.grid.squares[this.grid.endPointIndex];
 
-  let times = {};
-  let backtrace = {};
-  let pq = new PriorityQueue();
+    let times = {};
+    let backtrace = {};
+    let pq = new PriorityQueue();
 
-  times[startNode.index] = 0;
-  this.graph.nodes.forEach(node => {
-    if (node.index !== startNode.index) {
-      times[node.index] = Infinity;
-    }
-  });
-
-  pq.enqueue([startNode, 0]);
-
-  while (!pq.isEmpty()) {
-    let shortestStep = pq.dequeue();
-    let currentNode = shortestStep[0];
-    currentNode.check();
-    for(let i = 0; i < this.graph.adjacencyList[currentNode.index].length; i++) {
-      let neighbor = this.graph.adjacencyList[currentNode.index][i];
-      neighbor.node.check();
-
-      let time = times[currentNode.index] + neighbor.weight;
-      if (time < times[neighbor.node.index]) {
-        times[neighbor.node.index] = time;
-        backtrace[neighbor.node.index] = currentNode;
-        pq.enqueue([neighbor.node, time]);
+    times[startNode.index] = 0;
+    this.graph.nodes.forEach(node => {
+      if (node.index !== startNode.index) {
+        times[node.index] = Infinity;
       }
-      console.log("test");
-      await new Promise(r => setTimeout(r, 2));
+    });
+
+    pq.enqueue([startNode, 0]);
+
+    while (!pq.isEmpty()) {
+      let shortestStep = pq.dequeue();
+      let currentNode = shortestStep[0];
+      currentNode.check();
+      for(let i = 0; i < this.graph.adjacencyList[currentNode.index].length; i++) {
+        let neighbor = this.graph.adjacencyList[currentNode.index][i];
+        neighbor.node.check();
+
+        let time = times[currentNode.index] + neighbor.weight;
+        if (time < times[neighbor.node.index]) {
+          times[neighbor.node.index] = time;
+          backtrace[neighbor.node.index] = currentNode;
+          pq.enqueue([neighbor.node, time]);
+        }
+        console.log("test");
+        await new Promise(r => setTimeout(r, 2));
+      }
     }
-  }
 
-  let path = [];
-  path.push(endNode);
-  let lastStep = endNode;
-  while(lastStep !== startNode) {
-    path.unshift(backtrace[lastStep.index]);
-    lastStep = backtrace[lastStep.index];
+    if(endNode != null) {
+      let path = [];
+      path.push(endNode);
+      let lastStep = endNode;
+      while(lastStep !== startNode) {
+        path.unshift(backtrace[lastStep.index]);
+        lastStep = backtrace[lastStep.index];
+        lastStep.markPath();
+      }
+    }
+    this.hasRan = true;
   }
-
-  for(let i = 0; path.length; i++) {
-    path[i].markPath();
+  else {
+    this.grid.reset();
+    this.hasRan = false;
+    //this.findPath();
   }
 };
 

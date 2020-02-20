@@ -18,15 +18,28 @@ function Grid(width, height, sideLength) {
   this.startPointIndex = null;
   this.endPointIndex = null;
 
+  this.initSquares();
+}
+
+Grid.prototype.initSquares = function(){
+  this.squares = [];
   let i = 0, x = 0, y = 0;
 
-  for(y = 0; y < height; y++){
-    for(x = 0; x < width; x++) {
-      this.squares[i] = new Square(sideLength, i, x, y);
+  for(y = 0; y < this.height; y++){
+    for(x = 0; x < this.width; x++) {
+      this.squares[i] = new Square(this.sideLength, i, x, y);
+      this.squares[i].draw();
       i++;
     }
   }
-}
+};
+
+Grid.prototype.reset = function() {
+  this.startPointIndex = null;
+  this.endPointIndex = null;
+
+  this.initSquares();
+};
 
 Grid.prototype.draw = function() {
   this.squares.forEach(function(item) {
@@ -44,7 +57,7 @@ Grid.prototype.checkSquare = function(x, y) {
 
   if(index >= this.squares.length) {
     //TODO
-    alert("meme");
+    //alert("meme");
   }
   else {
 

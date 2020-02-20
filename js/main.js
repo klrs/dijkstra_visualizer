@@ -9,5 +9,10 @@
     findPathButton.addEventListener("click", function() {
       grid.findPath(algorithm);
     });
+    let resetButton = document.getElementById('reset');
+    resetButton.addEventListener("click", function() {
+      alert("reset");
+      grid.reset();
+    });
   };
 })();
